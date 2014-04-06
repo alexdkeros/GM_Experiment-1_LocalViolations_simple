@@ -43,36 +43,36 @@ class Node:
     def init(self):
         '''
         "init" method
-        @return: dictionary {"nodeId":id,"v":local stats vector}
+        @return: tuple (nodeId,local stats vector)
         '''
         #DBG
         print('init signal received at node %s'%self.id)
         
         self.vLast=self.v
-        return({"nodeId":self.id,"v":self.vLast})
+        return((self.id,self.vLast))
         
         
     def req(self):
         '''
         "req" method
-        @return: dictionary {"nodeId":id,"v":local stats vector,"u":drift vector}
+        @return: tuple (nodeId,local stats vector,drift vector)
         '''
         
         #DBG
         print('req signal received at node %s'%self.id)
         
-        return ({"nodeId":self.id,"v":self.v,"u":self.u})
+        return ((self.id,self.v,self.u))
     
     def rep(self):
         '''
         "rep" method
-        @return: dictionary {"nodeId":id,"v":local stats vector,"u":drift vector}
+        @return: tuple (nodeId,local stats vector,drift vector)
         '''
     
         #DBG
         print('reporting local violation at node %s, u:%0.2f'%(self.id,self.u))
         
-        return ({"nodeId":self.id,"v":self.v,"u":self.u})
+        return ((self.id,self.v,self.u))
 
         
     def adjSlk(self,dDelta):
@@ -125,7 +125,7 @@ class Node:
         
         #check for local violation
         if self.u>=self.thresh:
-            return self.rep(self)
+            return self.rep()
         else:
             return None
         
