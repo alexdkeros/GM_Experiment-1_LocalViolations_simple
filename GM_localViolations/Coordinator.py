@@ -57,7 +57,7 @@ class Coordinator:
             node[1].newEst(self.e)
             
         #DBG
-        print("sum of weights is: %0.2f, new e is:%0.2f"%(self.sumW,self.e))
+        print("coord:sum of weights is: %0.2f, new e is:%0.2f"%(self.sumW,self.e))
 
         gv=False
         while 1:
@@ -69,14 +69,14 @@ class Coordinator:
                     #local violation occured, rep msg received
                     
                     #DBG
-                    print("!local violation!")
+                    print("coord:!local violation!")
                     print(rep)
                     
                     gv=self.__balance(rep)
                     
                     if gv:
                         #global violation occured
-                        print("!!global violation, end simulation!!")
+                        print("coord:!!global violation, end simulation!!")
                         break
             if gv:
                 break
@@ -96,12 +96,15 @@ class Coordinator:
         balancingSet=set() #set containing tuples (nodeId,v,u)
         balancingSet.add(data)
        
-
-        b=0 #balancing vector
-        setW=0
        
         while 1:
+            #DBG
+            print('coord:balancing set is:')
+            print(balancingSet)
             #computing balancing vector b
+                    
+            b=0 #balancing vector
+            setW=0
             for node in balancingSet:
                 w=self.nodes[node[0]][0]
                 u=node[2]
@@ -112,7 +115,7 @@ class Coordinator:
             #evaluating monochromaticity   
             if b<self.thresh:
                 #DBG
-                print('balance success, b=%0.2f'%b)
+                print('coord:balance success, b=%0.2f'%b)
                 
                 #adjust slack vector
                 for node in balancingSet:
@@ -131,10 +134,26 @@ class Coordinator:
                 if len(diffSet):
                     #request new node data at random
                     reqNodeId=random.sample(diffSet,1)[0]
-        
+                    
+                    #DBG
+                    print('coord:requesting node %s'%reqNodeId)
+                    
                     balancingSet.add(self.nodes[reqNodeId][1].req())
                    
                 else:
+                    #DBG
+                    print('global violation with b=%0.2f'%b)
+                    
+                    vGl=0 #balancing vector
+                    setW=0
+                    for node in balancingSet:
+                        w=self.nodes[node[0]][0]
+                        v=node[1]
+                        vGl+=w*v
+                        setW+=w
+                    vGl=vGl/setW
+                    print("global stats vector is %0.2f"%vGl)
+                    
                     #no nodes to balance, global violation
                     for node in self.nodes.values():
                         node[1].globalViolation()
