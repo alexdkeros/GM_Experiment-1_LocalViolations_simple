@@ -15,4 +15,5 @@ defV=0
 defWeight=1
 
 threshold=10
+defMonFunc= lambda x: x
 

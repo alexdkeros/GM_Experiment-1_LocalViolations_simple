@@ -12,12 +12,15 @@ class Node:
     configuration via Config module
     '''
 
-    def __init__(self, nodeId, inputGen=InputStream().getData(), weight=Config.defWeight, threshold=Config.threshold, initialV=Config.defV):
+    def __init__(self, nodeId, inputGen=InputStream().getData(), weight=Config.defWeight, monFunc=Config.defMonFunc, threshold=Config.threshold, initialV=Config.defV):
         '''
         Constructor
         args:
             nodeId: the node id
+            inputGen: data input generator
             weight: the node weight
+            monFunc: the monitored function
+            threshold: the monitoring threshold
             initialV: the initial local statistics vector
         '''
 
@@ -25,6 +28,7 @@ class Node:
         self.id=nodeId
         self.inputGenerator=inputGen
         self.thresh=threshold    #monitoring threshold
+        self.monFunc=monFunc
         self.weight=weight  #node weight
         self.v=initialV    #local statistics vector
         self.vLast=0    #last sent local statistics vector
@@ -85,6 +89,11 @@ class Node:
         
         #adjusting current slack vector
         self.delta+=dDelta
+        
+        #recalculate last drift vector value with new slack vector
+        self.u=self.u+dDelta/self.weight
+ 
+
     
     
     def newEst(self,newE):
@@ -123,8 +132,11 @@ class Node:
         self.v=self.inputGenerator.next()
         self.u=self.e+(self.v-self.vLast)+(self.delta/self.weight)
         
+        #DBG
+        print("node:%s, v=%0.2f, u=%0.2f, e=%0.2f, vLast=%0.2f, delta=%0.2f, w=%0.2f, monU=%0.2f"%(self.id, self.v, self.u, self.e, self.vLast, self.delta, self.weight, self.monFunc(self.u)))
+        
         #check for local violation
-        if self.u>=self.thresh:
+        if self.monFunc(self.u)>=self.thresh:
             return self.rep()
         else:
             return None

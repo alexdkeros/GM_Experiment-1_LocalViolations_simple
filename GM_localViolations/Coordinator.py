@@ -13,12 +13,13 @@ class Coordinator:
     '''
 
 
-    def __init__(self, nodes, balancing="random", threshold=Config.threshold):
+    def __init__(self, nodes, balancing="random",monFunc=Config.defMonFunc, threshold=Config.threshold):
         '''
         Constructor
         args:
             nodes: network node dictionary
             balancing: the balancing method
+            monFunc: the monitoring function
             threshold: monitoring threshold
         '''
 
@@ -26,6 +27,7 @@ class Coordinator:
         #coordinator data initialization
         self.nodes=nodes   #network node dictionary {"nodeId" : (weight ,node instance)}
         self.thresh=threshold    #monitoring threshold
+        self.monFunc=monFunc
         self.v=0    #global statistics vector
         self.e=0    #estimate vector
         self.sumW=0 #sum of node weights
@@ -113,7 +115,7 @@ class Coordinator:
             b=b/setW
             
             #evaluating monochromaticity   
-            if b<self.thresh:
+            if self.monFunc(b)<self.thresh:
                 #DBG
                 print('coord:balance success, b=%0.2f'%b)
                 
@@ -145,14 +147,20 @@ class Coordinator:
                     print('global violation with b=%0.2f'%b)
                     
                     vGl=0 #balancing vector
+                    uGl=0
                     setW=0
                     for node in balancingSet:
                         w=self.nodes[node[0]][0]
                         v=node[1]
+                        u=node[2]
                         vGl+=w*v
+                        uGl+=w*u
                         setW+=w
                     vGl=vGl/setW
-                    print("global stats vector is %0.2f"%vGl)
+                    uGl=uGl/setW
+                    
+                    print('global stats vector by drift vectors is %0.2f, func over it:%0.2f'%(uGl,self.monFunc(uGl)))
+                    print("global stats vector is %0.2f, func over it:%0.2f"%(vGl, self.monFunc(vGl)))
                     
                     #no nodes to balance, global violation
                     for node in self.nodes.values():
