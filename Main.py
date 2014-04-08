@@ -10,11 +10,11 @@ if __name__ == '__main__':
     print('--------------experiment start-------------------')
     
     #custom config data
-    nodeNum=10
+    nodeNum=2
     nodes={}
     for i in range(nodeNum):
         nodeId=uuid.uuid4()
-        nodes[nodeId]=(1,Node(nodeId,InputStream()))
+        nodes[nodeId]=(1,Node(nodeId))
         
     Coord=Coordinator(nodes)
     

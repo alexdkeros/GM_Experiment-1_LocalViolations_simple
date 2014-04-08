@@ -12,7 +12,7 @@ class Node:
     configuration via Config module
     '''
 
-    def __init__(self, nodeId, inputGen=InputStream(), weight=Config.defWeight, monFunc=Config.defMonFunc, threshold=Config.threshold, initialV=Config.defV):
+    def __init__(self, nodeId, inputGen=None, weight=Config.defWeight, monFunc=Config.defMonFunc, threshold=Config.threshold, initialV=Config.defV):
         '''
         Constructor
         args:
@@ -26,6 +26,8 @@ class Node:
 
         #node data initialization
         self.id=nodeId
+        if not inputGen:
+            inputGen=InputStream()
         self.inputGenerator=inputGen.getData()
         self.thresh=threshold    #monitoring threshold
         self.monFunc=monFunc
