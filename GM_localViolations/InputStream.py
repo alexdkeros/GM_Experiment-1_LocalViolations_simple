@@ -13,6 +13,7 @@ class InputStream:
     implements a generator of data
     configuration via Config module
     '''
+    velArray=[]
 
     def __init__(self,status=Config.defStatus,initXData=Config.defInitXData, mean=Config.defMean, std=Config.defStd, interval=Config.defInterval):
         '''
@@ -32,8 +33,8 @@ class InputStream:
         self.mean=mean
         self.std=std
         self.interval=interval
-        self.velocity=norm.rvs(mean,std)
-        
+        self.velocity=norm.rvs(mean,std)     
+        InputStream.velArray.append(self.velocity)
     
     def getData(self):
         '''
@@ -44,15 +45,23 @@ class InputStream:
         while 1:
             if self.status=="random":
                 self.velocity=norm.rvs(self.mean,self.std)
+
             for i in range(self.interval):
                 yield xData
             xData=xData+self.velocity
                 
+                
+                
+                
+                
 if __name__=="__main__":
     '''simple test'''
     ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
-    
+    ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
+    ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
+
+
     print(ip)
-    for i in range(20):
-        print(ip.next())
-        
+    #for i in range(20):
+    #    print(ip.next())
+    print(InputStream.velArray)   
