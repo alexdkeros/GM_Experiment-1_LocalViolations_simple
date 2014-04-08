@@ -174,6 +174,9 @@ class Coordinator:
                     dDelta=w*b-w*u
                     noderef.adjSlk(dDelta)
                 
+                #EXP-balance
+                self.reqPerBalanceCounterArray.append(reqPerBalanceCounter)
+                
                 #break balancing loop
                 return False
             
@@ -218,9 +221,11 @@ class Coordinator:
                         node[1].globalViolation()
                     
                     #break balancing loop
+                    
+                    #EXP-balance
+                    self.reqPerBalanceCounterArray.append(reqPerBalanceCounter)
                     return True
-            #EXP-balance
-            self.reqPerBalanceCounterArray.append(reqPerBalanceCounter)
+
             
        
         
