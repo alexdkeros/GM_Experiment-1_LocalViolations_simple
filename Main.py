@@ -18,6 +18,8 @@ if __name__ == '__main__':
         
     Coord=Coordinator(nodes)
     
-    Coord.monitor()
+    exp=Coord.monitor()
+    print('--------experimental results---------')
+    print(exp)
     
     

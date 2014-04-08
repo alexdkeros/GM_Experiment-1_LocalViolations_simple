@@ -2,6 +2,7 @@
 @author: ak
 '''
 import random
+import time
 from GM_localViolations.Node import Node
 from GM_localViolations import Config
 
@@ -34,8 +35,13 @@ class Coordinator:
         self.balancing=balancing    #balancing method
 
         
-        #experimental results
-        self.expCounter=0
+        #experimental results (counters)
+        self.lvCounter=0
+        self.iterCounter=0
+        self.reqCounter=0
+        self.lvPerIterCounterArray=[]
+        self.reqPerBalanceCounterArray=[]
+        
         
     def monitor(self):
         '''
@@ -43,7 +49,7 @@ class Coordinator:
         control data income at nodes by calling their function run()
         checks for global violation
         calls balancing method
-        @return: experimental data
+        @return: experimental results
         '''
         #-----init
         #computing initial estimation vector
@@ -61,14 +67,36 @@ class Coordinator:
         #DBG
         print("coord:sum of weights is: %0.2f, new e is:%0.2f"%(self.sumW,self.e))
 
+        #EXP-counter init
+        self.lvCounter=0
+        self.iterCounter=0
+        self.reqCounter=0
+        self.lvPerIterCounterArray=[]
+        self.reqPerBalanceCounterArray=[]
+        
+        #time limit to avoid endless run at no Global Violation Scenario
+        startT=time.time()
+        elapsedT=0
+        
         gv=False
-        while 1:
+        while elapsedT<Config.timeLimit:
+            #EXP-iter
+            self.iterCounter+=1
+            lvPerIterCounter=0
+            
+            #DBG
+            print('--------------------iteration number:%d----------------------'%self.iterCounter)
+            
             #-----monitoring
             for node in self.nodes.values():
                 rep=node[1].run()
                 
                 if rep:
                     #local violation occured, rep msg received
+                    
+                    #EXP-lv
+                    self.lvCounter+=1
+                    lvPerIterCounter+=1
                     
                     #DBG
                     print("coord:!local violation!")
@@ -80,8 +108,25 @@ class Coordinator:
                         #global violation occured
                         print("coord:!!global violation, end simulation!!")
                         break
+            
+            #EXP-iterArray
+            self.lvPerIterCounterArray.append(lvPerIterCounter)
+            
             if gv:
                 break
+            
+            #keep track of time
+            elapsedT=time.time()-startT
+            
+
+        
+        #DBG
+        if elapsedT>=Config.timeLimit:
+            print('TIMEOUT')
+        
+        #EXP
+        exp={'total_lv':self.lvCounter,'total_iterations':self.iterCounter,'total_request_msgs':self.reqCounter,'lvs_per_iter':self.lvPerIterCounterArray,'req_per_balance':self.reqPerBalanceCounterArray}
+        return(exp)
         
         
     def __balance(self, data):
@@ -94,6 +139,8 @@ class Coordinator:
                 else:
                     return False
         '''
+        #EXP-balance
+        reqPerBalanceCounter=0
         
         balancingSet=set() #set containing tuples (nodeId,v,u)
         balancingSet.add(data)
@@ -137,6 +184,10 @@ class Coordinator:
                     #request new node data at random
                     reqNodeId=random.sample(diffSet,1)[0]
                     
+                    #EXP-req
+                    self.reqCounter+=1
+                    reqPerBalanceCounter+=1
+                    
                     #DBG
                     print('coord:requesting node %s'%reqNodeId)
                     
@@ -168,7 +219,8 @@ class Coordinator:
                     
                     #break balancing loop
                     return True
-                    
-                
+            #EXP-balance
+            self.reqPerBalanceCounterArray.append(reqPerBalanceCounter)
+            
        
         
