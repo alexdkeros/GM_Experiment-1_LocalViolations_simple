@@ -5,7 +5,7 @@ import math
 import numpy as np
 
 #exp config
-defIterations=20
+defIterations=30
 nodeStart=1
 nodeEnd=5
 
@@ -55,7 +55,7 @@ def toNdArray(array2d):
     return nda
 
 if __name__=='__main__':
-    a=[[2,2,2,2,2],[5,5,5]]
+    a=[[2,2,2,2,2],[5,5,5],[1,1,1,1,1,1,1],[4,4,4,4]]
     print(avgListsOverIters(a))
     print(type(toNdArray(a)))
         

@@ -46,12 +46,14 @@ if __name__ == '__main__':
             exp['total_iterations']+=expData['total_iterations']
             exp['total_request_msgs']+=expData['total_request_msgs']
             exp['lvs_per_iter'].append(expData['lvs_per_iter'])
+            exp['req_per_balance'].append(expData['req_per_balance'])
             
         #averaging data over iterations
         exp['total_lv']=exp['total_lv']/Config.defIterations
         exp['total_iterations']=exp['total_iterations']/Config.defIterations
         exp['total_request_msgs']=exp['total_request_msgs']/Config.defIterations
         lvsPerIterInNodeRange.append(Config.avgListsOverIters(exp['lvs_per_iter']))
+        reqPerBalanceInNodeRange.append(Config.avgListsOverIters(exp['req_per_balance']))
         lvsInNodeRange.append(exp['total_lv'])
         itersInNodeRange.append(exp['total_iterations'])
         reqsInNodeRange.append(exp['total_request_msgs'])
@@ -72,6 +74,8 @@ if __name__ == '__main__':
     print(reqsInNodeRange)
     print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInNodeRange)))
     print(lvsPerIterInNodeRange)
+    print('MAIN:ReqPerBalance:%d'%max(map(len,reqPerBalanceInNodeRange)))
+    print(reqPerBalanceInNodeRange)
     
     #DBG
     #print('velocities:')
@@ -135,13 +139,30 @@ if __name__ == '__main__':
     nodes = range(Config.nodeStart,Config.nodeEnd+1)
     iters = range(0,max(map(len,lvsPerIterInNodeRange)))
     Y,X = pl.meshgrid(nodes,iters)
-    p=lvsPerIterAxes.plot_surface(X,Y,Config.toNdArray(lvsPerIterInNodeRange).transpose(),rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    p=lvsPerIterAxes.plot_surface(X,Y,Config.toNdArray(lvsPerIterInNodeRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
     cb = lvsPerIterFig.colorbar(p, shrink=0.5)
     lvsPerIterAxes.set_ylim3d(Config.nodeStart,Config.nodeEnd)
     lvsPerIterAxes.set_xlabel('Iterations')
     lvsPerIterAxes.set_ylabel('Nodes')
     lvsPerIterAxes.set_zlabel('Local Violations')
-    lvsPerIterFig.show()
-    time.sleep(10)
+    #lvsPerIterFig.show()
+    #time.sleep(20)
+    
+    #reqs per balance plot
+    ReqsPerBalanceFig=pl.figure()
+    ReqsPerBalanceAxes=ReqsPerBalanceFig.add_subplot(1,1,1,projection='3d')
+    
+
+    nodes = range(Config.nodeStart,Config.nodeEnd+1)
+    balances = range(0,max(map(len,reqPerBalanceInNodeRange)))
+    Y,X = pl.meshgrid(nodes,balances)
+    p=ReqsPerBalanceAxes.plot_surface(X,Y,Config.toNdArray(reqPerBalanceInNodeRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
+    cb = ReqsPerBalanceFig.colorbar(p, shrink=0.5)
+    ReqsPerBalanceAxes.set_ylim3d(Config.nodeStart,Config.nodeEnd)
+    ReqsPerBalanceAxes.set_xlabel('Balances')
+    ReqsPerBalanceAxes.set_ylabel('Nodes')
+    ReqsPerBalanceAxes.set_zlabel('Requests')
+    ReqsPerBalanceFig.show()
+    time.sleep(20)
     
     
