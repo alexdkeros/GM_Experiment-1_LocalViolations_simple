@@ -3,6 +3,11 @@
 '''
 import math
 
+#exp config
+defIterations=50
+nodeStart=1
+nodeEnd=20
+
 #runtime limit(in sec)
 timeLimit=30
 
