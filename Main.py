@@ -5,6 +5,8 @@ import uuid
 import time
 import pylab as pl
 from matplotlib import rc
+from matplotlib import cm
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 from GM_localViolations.Coordinator import Coordinator
 from GM_localViolations.Node import Node
 from GM_localViolations.InputStream import InputStream
@@ -43,11 +45,13 @@ if __name__ == '__main__':
             exp['total_lv']+=expData['total_lv']
             exp['total_iterations']+=expData['total_iterations']
             exp['total_request_msgs']+=expData['total_request_msgs']
-        
+            exp['lvs_per_iter'].append(expData['lvs_per_iter'])
+            
         #averaging data over iterations
         exp['total_lv']=exp['total_lv']/Config.defIterations
         exp['total_iterations']=exp['total_iterations']/Config.defIterations
         exp['total_request_msgs']=exp['total_request_msgs']/Config.defIterations
+        lvsPerIterInNodeRange.append(Config.avgListsOverIters(exp['lvs_per_iter']))
         lvsInNodeRange.append(exp['total_lv'])
         itersInNodeRange.append(exp['total_iterations'])
         reqsInNodeRange.append(exp['total_request_msgs'])
@@ -66,6 +70,8 @@ if __name__ == '__main__':
     print(itersInNodeRange)
     print('MAIN:reqs:')
     print(reqsInNodeRange)
+    print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInNodeRange)))
+    print(lvsPerIterInNodeRange)
     
     #DBG
     #print('velocities:')
@@ -89,22 +95,23 @@ if __name__ == '__main__':
     lvAxes.set_ylabel('Local Violations')
     lvAxes.set_title('Local Violations in Node Range')
     lvFig.tight_layout()
-    lvFig.savefig('LocalViolationsInNodeRangePlot.png')
-    lvFig.show()
-    time.sleep(10)
+    #lvFig.savefig('LocalViolationsInNodeRangePlot.png')
+    #lvFig.show()
+    #time.sleep(10)
     
     #iterations plot
     iterFig,iterAxes=pl.subplots()
     iterAxes.plot(nodeRange,itersInNodeRange,'r')
     iterAxes.grid(True)
     iterAxes.set_xlim([Config.nodeStart,Config.nodeEnd])
+    #iterAxes.set_ylim([0,50])
     iterAxes.set_xlabel('Nodes')
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Node Range')
     iterFig.tight_layout()
-    iterFig.savefig('IterationsInNodeRangePlot.png')
-    iterFig.show()
-    time.sleep(10)
+    #iterFig.savefig('IterationsInNodeRangePlot.png')
+    #iterFig.show()
+    #time.sleep(5)
     
     #requests plot
     reqFig,reqAxes=pl.subplots()
@@ -115,9 +122,26 @@ if __name__ == '__main__':
     reqAxes.set_ylabel('Requests')
     reqAxes.set_title('Requests until Global Violation in Node Range')
     reqFig.tight_layout()
-    reqFig.savefig('RequestsInNodeRangePlot.png')
-    reqFig.show()
-    time.sleep(10)
+    #reqFig.savefig('RequestsInNodeRangePlot.png')
+    #reqFig.show()
+    #time.sleep(10)
     
+    #3d plots
+    #vls per iteration plot
+    lvsPerIterFig=pl.figure()
+    lvsPerIterAxes=lvsPerIterFig.add_subplot(1,1,1,projection='3d')
+    
+
+    nodes = range(Config.nodeStart,Config.nodeEnd+1)
+    iters = range(0,max(map(len,lvsPerIterInNodeRange)))
+    Y,X = pl.meshgrid(nodes,iters)
+    p=lvsPerIterAxes.plot_surface(X,Y,Config.toNdArray(lvsPerIterInNodeRange).transpose(),rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+    cb = lvsPerIterFig.colorbar(p, shrink=0.5)
+    lvsPerIterAxes.set_ylim3d(Config.nodeStart,Config.nodeEnd)
+    lvsPerIterAxes.set_xlabel('Iterations')
+    lvsPerIterAxes.set_ylabel('Nodes')
+    lvsPerIterAxes.set_zlabel('Local Violations')
+    lvsPerIterFig.show()
+    time.sleep(10)
     
     
