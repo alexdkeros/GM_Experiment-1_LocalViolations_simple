@@ -5,12 +5,12 @@ import math
 import numpy as np
 
 #exp NODE RANGE
-nodeStart=5
-nodeEnd=5
+nodeStart=2
+nodeEnd=20
 
 #- MEAN RANGE
 meanStart=0
-meanEnd=20
+meanEnd=10
 meanStep=0.5
 meanLvsPerIterPlotLim=100
 meanReqPerBalPlotLim=200
@@ -18,7 +18,7 @@ meanReqPerBalPlotLim=200
 #- STD RANGE
 stdStart=0.5
 stdEnd=9
-stdStep=0.2
+stdStep=0.5
 
 
 
@@ -26,7 +26,7 @@ stdStep=0.2
 
 #--------------default values---------------------
 #exp config
-defIterations=15
+defIterations=20
 
 #runtime limit(in sec)
 timeLimit=3

@@ -39,7 +39,7 @@ class Node:
         self.delta=0    #slack vector
         
         #DBG
-        print('node %s created'%self.id)
+        #print('node %s created'%self.id)
        
        
         
@@ -52,7 +52,7 @@ class Node:
         @return: tuple (nodeId,local stats vector)
         '''
         #DBG
-        print('init signal received at node %s'%self.id)
+        #print('init signal received at node %s'%self.id)
         
         self.vLast=self.v
         return((self.id,self.vLast))
@@ -65,7 +65,7 @@ class Node:
         '''
         
         #DBG
-        print('req signal received at node %s'%self.id)
+        #print('req signal received at node %s'%self.id)
         
         return ((self.id,self.v,self.u))
     
@@ -76,7 +76,7 @@ class Node:
         '''
     
         #DBG
-        print('reporting local violation at node %s, u:%0.2f'%(self.id,self.u))
+        #print('reporting local violation at node %s, u:%0.2f'%(self.id,self.u))
         
         return ((self.id,self.v,self.u))
 
@@ -87,7 +87,7 @@ class Node:
         '''
 
         #DBG
-        print('adjSlk signal received at node %s, dDelta: %0.2f'%(self.id,dDelta))
+        #print('adjSlk signal received at node %s, dDelta: %0.2f'%(self.id,dDelta))
         
         #adjusting current slack vector
         self.delta+=dDelta
@@ -103,7 +103,7 @@ class Node:
         "new-est" method
         '''
         #DBG
-        print('new-est signal received at node %s, new est: %0.2f'%(self.id,newE))
+        #print('new-est signal received at node %s, new est: %0.2f'%(self.id,newE))
         
         self.e=newE
         self.vLast=self.v
@@ -114,7 +114,7 @@ class Node:
         "global-violation" method
         '''
         #DBG
-        print('global-violation signal received at node %s'%self.id)
+        #print('global-violation signal received at node %s'%self.id)
 
 
     

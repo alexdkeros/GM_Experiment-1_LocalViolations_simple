@@ -1,6 +1,8 @@
 '''
 @author: ak
 '''
+import matplotlib
+matplotlib.use('Agg')
 import uuid
 import time
 import pylab as pl
@@ -107,9 +109,9 @@ if __name__ == '__main__':
     lvAxes.set_ylabel('Local Violations')
     lvAxes.set_title('Local Violations in Node Range')
     lvFig.tight_layout()
-    #lvFig.savefig('LocalViolationsInNodeRangePlot.png')
+    lvFig.savefig('LocalViolationsInNodeRangePlot.png')
     #lvFig.show()
-    #time.sleep(10)
+    #time.sleep(5)
     
     #iterations plot
     iterFig,iterAxes=pl.subplots()
@@ -121,7 +123,7 @@ if __name__ == '__main__':
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Node Range')
     iterFig.tight_layout()
-    #iterFig.savefig('IterationsInNodeRangePlot.png')
+    iterFig.savefig('IterationsInNodeRangePlot.png')
     #iterFig.show()
     #time.sleep(5)
     
@@ -134,7 +136,7 @@ if __name__ == '__main__':
     reqAxes.set_ylabel('Requests')
     reqAxes.set_title('Requests until Global Violation in Node Range')
     reqFig.tight_layout()
-    #reqFig.savefig('RequestsInNodeRangePlot.png')
+    reqFig.savefig('RequestsInNodeRangePlot.png')
     #reqFig.show()
     #time.sleep(10)
     
@@ -153,7 +155,7 @@ if __name__ == '__main__':
     lvsPerIterAxes.set_ylabel('Nodes')
     lvsPerIterAxes.set_zlabel('Local Violations')
     lvsPerIterAxes.set_title('Average Local Violations per Iteration')
-    #lvsPerIterFig.savefig('VlsPerIterInNodeRangePlot.png')
+    lvsPerIterFig.savefig('VlsPerIterInNodeRangePlot.png')
     #lvsPerIterFig.show()
     #time.sleep(20)
     
@@ -171,7 +173,7 @@ if __name__ == '__main__':
     ReqsPerBalanceAxes.set_ylabel('Nodes')
     ReqsPerBalanceAxes.set_zlabel('Requests')
     ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
-    #ReqsPerBalanceFig.savefig('ReqsPerBalanceInNodeRangePlot.png')
+    ReqsPerBalanceFig.savefig('ReqsPerBalanceInNodeRangePlot.png')
     #ReqsPerBalanceFig.show()
     #time.sleep(20)
     
@@ -294,9 +296,9 @@ if __name__ == '__main__':
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Mean Range')
     iterFig.tight_layout()
-    #iterFig.savefig('IterationsInMeanRangePlot.png')
-    iterFig.show()
-    time.sleep(10)
+    iterFig.savefig('IterationsInMeanRangePlot.png')
+    #iterFig.show()
+    #time.sleep(10)
     
     #requests plot
     reqFig,reqAxes=pl.subplots()
@@ -307,9 +309,9 @@ if __name__ == '__main__':
     reqAxes.set_ylabel('Requests')
     reqAxes.set_title('Requests until Global Violation in Mean Range')
     reqFig.tight_layout()
-    #reqFig.savefig('RequestsInMeanRangePlot.png')
-    reqFig.show()
-    time.sleep(10)
+    reqFig.savefig('RequestsInMeanRangePlot.png')
+    #reqFig.show()
+    #time.sleep(10)
     
     
     #3d plots
@@ -329,8 +331,8 @@ if __name__ == '__main__':
     lvsPerIterAxes.set_zlabel('Local Violations')
     lvsPerIterAxes.set_title('Average Local Violations per Iteration')
     lvsPerIterFig.savefig('LvsPerIterInMeanRangePlot.png')
-    lvsPerIterFig.show()
-    time.sleep(10)
+    #lvsPerIterFig.show()
+    #time.sleep(10)
 
 
     #reqs per balance plot
@@ -349,8 +351,8 @@ if __name__ == '__main__':
     ReqsPerBalanceAxes.set_zlabel('Requests')
     ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
     ReqsPerBalanceFig.savefig('ReqsPerBalanceInMeanRangePlot.png')
-    ReqsPerBalanceFig.show()
-    time.sleep(10)
+    #ReqsPerBalanceFig.show()
+    #time.sleep(10)
     
     
 
@@ -457,9 +459,9 @@ if __name__ == '__main__':
     lvAxes.set_ylabel('Local Violations')
     lvAxes.set_title('Local Violations in Standard Deviation Range')
     lvFig.tight_layout()
-    #lvFig.savefig('LocalViolationsInStdRangePlot.png')
-    lvFig.show()
-    time.sleep(10)
+    lvFig.savefig('LocalViolationsInStdRangePlot.png')
+    #lvFig.show()
+    #time.sleep(10)
     
     #iterations plot
     iterFig,iterAxes=pl.subplots()
@@ -471,9 +473,9 @@ if __name__ == '__main__':
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Standard Deviation Range')
     iterFig.tight_layout()
-    #iterFig.savefig('IterationsInStdRangePlot.png')
-    iterFig.show()
-    time.sleep(10)
+    iterFig.savefig('IterationsInStdRangePlot.png')
+    #iterFig.show()
+    #time.sleep(10)
     
     #requests plot
     reqFig,reqAxes=pl.subplots()
@@ -484,9 +486,9 @@ if __name__ == '__main__':
     reqAxes.set_ylabel('Requests')
     reqAxes.set_title('Requests until Global Violation in Standard Deviation Range')
     reqFig.tight_layout()
-    #reqFig.savefig('RequestsInStdRangePlot.png')
-    reqFig.show()
-    time.sleep(10)
+    reqFig.savefig('RequestsInStdRangePlot.png')
+    #reqFig.show()
+    #time.sleep(10)
     
 
     
@@ -507,8 +509,8 @@ if __name__ == '__main__':
     lvsPerIterAxes.set_zlabel('Local Violations')
     lvsPerIterAxes.set_title('Average Local Violations per Iteration')
     lvsPerIterFig.savefig('LvsPerIterInStdRangePlot.png')
-    lvsPerIterFig.show()
-    time.sleep(10)
+    #lvsPerIterFig.show()
+    #time.sleep(10)
 
 
     #reqs per balance plot
@@ -526,5 +528,5 @@ if __name__ == '__main__':
     ReqsPerBalanceAxes.set_zlabel('Requests')
     ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
     ReqsPerBalanceFig.savefig('ReqsPerBalanceInStdRangePlot.png')
-    ReqsPerBalanceFig.show()
-    time.sleep(10)
+    #ReqsPerBalanceFig.show()
+    #time.sleep(10)
