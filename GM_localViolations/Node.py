@@ -135,7 +135,7 @@ class Node:
         self.u=self.e+(self.v-self.vLast)+(self.delta/self.weight)
         
         #DBG
-        print("node:%s, v=%0.2f, u=%0.2f, e=%0.2f, vLast=%0.2f, delta=%0.2f, w=%0.2f, monU=%0.2f"%(self.id, self.v, self.u, self.e, self.vLast, self.delta, self.weight, self.monFunc(self.u)))
+        #print("node:%s, v=%0.2f, u=%0.2f, e=%0.2f, vLast=%0.2f, delta=%0.2f, w=%0.2f, monU=%0.2f"%(self.id, self.v, self.u, self.e, self.vLast, self.delta, self.weight, self.monFunc(self.u)))
         
         #check for local violation
         if self.monFunc(self.u)>=self.thresh:

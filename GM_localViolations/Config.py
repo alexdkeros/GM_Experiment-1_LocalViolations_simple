@@ -4,10 +4,29 @@
 import math
 import numpy as np
 
-#exp config
-defIterations=30
-nodeStart=1
+#exp NODE RANGE
+nodeStart=5
 nodeEnd=5
+
+#- MEAN RANGE
+meanStart=0
+meanEnd=20
+meanStep=0.5
+meanLvsPerIterPlotLim=100
+meanReqPerBalPlotLim=200
+
+#- STD RANGE
+stdStart=0.5
+stdEnd=10
+stdStep=0.5
+
+
+
+
+
+#--------------default values---------------------
+#exp config
+defIterations=10
 
 #runtime limit(in sec)
 timeLimit=5
@@ -15,14 +34,18 @@ timeLimit=5
 #default InputStream data
 defStatus='static'
 defInitXData=0
-defMean=5
-defStd=1
 defInterval=1
 
+#default vel distribution params
+defMean=5
+defStd=1
+
 #default Node values
+defNodeNum=10
 defV=0
 defWeight=1
 
+#default geometric monitoring params
 threshold=100
 defMonFunc= lambda x: x
 
