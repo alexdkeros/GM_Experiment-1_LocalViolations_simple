@@ -17,8 +17,8 @@ meanReqPerBalPlotLim=200
 
 #- STD RANGE
 stdStart=0.5
-stdEnd=10
-stdStep=0.5
+stdEnd=9
+stdStep=0.2
 
 
 
@@ -26,10 +26,10 @@ stdStep=0.5
 
 #--------------default values---------------------
 #exp config
-defIterations=10
+defIterations=15
 
 #runtime limit(in sec)
-timeLimit=5
+timeLimit=3
 
 #default InputStream data
 defStatus='static'

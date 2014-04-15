@@ -15,8 +15,7 @@ from GM_localViolations import Config
 
 if __name__ == '__main__':
     
-    #!!!DBG
-    '''
+
     
     #-------------------------------------------------------------------------------------
     #---------------------------------EXPERIMENT:-----------------------------------------
@@ -176,8 +175,7 @@ if __name__ == '__main__':
     #ReqsPerBalanceFig.show()
     #time.sleep(20)
     
-    #!!!DBG
-    '''
+  
     
     
     
@@ -351,5 +349,182 @@ if __name__ == '__main__':
     ReqsPerBalanceAxes.set_zlabel('Requests')
     ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
     ReqsPerBalanceFig.savefig('ReqsPerBalanceInMeanRangePlot.png')
+    ReqsPerBalanceFig.show()
+    time.sleep(10)
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+        
+    #-------------------------------------------------------------------------------------
+    #---------------------------------EXPERIMENT:-----------------------------------------
+    #---------------------------------STD RANGE------------------------------------------
+    #-------------------------------------------------------------------------------------
+
+    print('--------------experiment start:STD-------------------')
+    #experimental results init
+    lvsInStdRange=[]
+    itersInStdRange=[]
+    reqsInStdRange=[]
+    lvsPerIterInStdRange=[]
+    reqPerBalanceInStdRange=[]
+    
+    #std experimental range
+    for stdVal in pl.arange(Config.stdStart,Config.stdEnd+1,Config.stdStep):
+        
+        #DBG
+        print('MAIN:std is %f'%stdVal)
+        
+        #node specific experimental data over iterations
+        exp={'total_lv':0, 'total_iterations':0, 'total_request_msgs':0, 'lvs_per_iter':[], 'req_per_balance':[]}
+
+        #iterations to avg over
+        for iterations in range(Config.defIterations):
+            
+            #init experiment
+            nodes={}
+            for i in range(Config.defNodeNum):
+                nodeId=uuid.uuid4()
+                nodeInputGen=InputStream(std=stdVal)
+                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=nodeInputGen))
+            Coord=Coordinator(nodes)
+            
+            #run experiment
+            expData=Coord.monitor()
+            
+            #collect data
+            exp['total_lv']+=expData['total_lv']
+            exp['total_iterations']+=expData['total_iterations']
+            exp['total_request_msgs']+=expData['total_request_msgs']
+            exp['lvs_per_iter'].append(expData['lvs_per_iter'])
+            exp['req_per_balance'].append(expData['req_per_balance'])
+            
+        #averaging data over iterations
+        exp['total_lv']=exp['total_lv']/Config.defIterations
+        exp['total_iterations']=exp['total_iterations']/Config.defIterations
+        exp['total_request_msgs']=exp['total_request_msgs']/Config.defIterations
+        lvsPerIterInStdRange.append(Config.avgListsOverIters(exp['lvs_per_iter']))
+        reqPerBalanceInStdRange.append(Config.avgListsOverIters(exp['req_per_balance']))
+        lvsInStdRange.append(exp['total_lv'])
+        itersInStdRange.append(exp['total_iterations'])
+        reqsInStdRange.append(exp['total_request_msgs'])
+        
+        #DBG
+        print('MAIN:data for Std %f'%stdVal)
+        print(exp)
+            
+    
+    #----------------------print experimental results
+    print('--------experimental results---------')
+    #DBG
+    print('MAIN:lvs:')
+    print(lvsInStdRange)
+    print('MAIN:iters:')
+    print(itersInStdRange)
+    print('MAIN:reqs:')
+    print(reqsInStdRange)
+    print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInStdRange)))
+    print(lvsPerIterInStdRange)
+    print('MAIN:ReqPerBalance:%d'%max(map(len,reqPerBalanceInStdRange)))
+    print(reqPerBalanceInStdRange)
+    
+    #DBG
+    #print('velocities:')
+    #print(InputStream.velArray)
+    
+    
+    #---------------------plot experimental results
+    
+    rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+    rc('text', usetex=True)
+    
+
+    #2Dplots
+    stdRange = pl.arange( Config.stdStart, Config.stdEnd+1,Config.stdStep)
+
+    #local violation plot
+    lvFig,lvAxes=pl.subplots()
+    lvAxes.plot(stdRange,lvsInStdRange,'r')
+    lvAxes.grid(True)
+    lvAxes.set_xlim([Config.stdStart,Config.stdEnd])
+    lvAxes.set_xlabel('Standard Deviation')
+    lvAxes.set_ylabel('Local Violations')
+    lvAxes.set_title('Local Violations in Standard Deviation Range')
+    lvFig.tight_layout()
+    #lvFig.savefig('LocalViolationsInStdRangePlot.png')
+    lvFig.show()
+    time.sleep(10)
+    
+    #iterations plot
+    iterFig,iterAxes=pl.subplots()
+    iterAxes.plot(stdRange,itersInStdRange,'r')
+    iterAxes.grid(True)
+    iterAxes.set_xlim([Config.stdStart,Config.stdEnd])
+    #iterAxes.set_ylim([0,50])
+    iterAxes.set_xlabel('Standard Deviation')
+    iterAxes.set_ylabel('Iterations')
+    iterAxes.set_title('Iterations until Global Violation in Standard Deviation Range')
+    iterFig.tight_layout()
+    #iterFig.savefig('IterationsInStdRangePlot.png')
+    iterFig.show()
+    time.sleep(10)
+    
+    #requests plot
+    reqFig,reqAxes=pl.subplots()
+    reqAxes.plot(stdRange,reqsInStdRange,'r')
+    reqAxes.grid(True)
+    reqAxes.set_xlim([Config.stdStart,Config.stdEnd])
+    reqAxes.set_xlabel('Standard Deviation')
+    reqAxes.set_ylabel('Requests')
+    reqAxes.set_title('Requests until Global Violation in Standard Deviation Range')
+    reqFig.tight_layout()
+    #reqFig.savefig('RequestsInStdRangePlot.png')
+    reqFig.show()
+    time.sleep(10)
+    
+
+    
+    
+    #3d plots
+    #vls per iteration plot
+    lvsPerIterFig=pl.figure()
+    lvsPerIterAxes=lvsPerIterFig.add_subplot(1,1,1,projection='3d')
+    stds = pl.arange(Config.stdStart,Config.stdEnd+1,Config.stdStep)
+    iters = range(0,max(map(len,lvsPerIterInStdRange)))
+    Y,X = pl.meshgrid(stds,iters)
+    p=lvsPerIterAxes.plot_surface(X,Y,Config.toNdArray(lvsPerIterInStdRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
+    lvsPerIterAxes.view_init(40, 40)
+    cb = lvsPerIterFig.colorbar(p, shrink=0.5)
+    lvsPerIterAxes.set_ylim3d([Config.stdStart,Config.stdEnd+1])
+    lvsPerIterAxes.set_xlabel('Iterations')
+    lvsPerIterAxes.set_ylabel('Standard Deviation')
+    lvsPerIterAxes.set_zlabel('Local Violations')
+    lvsPerIterAxes.set_title('Average Local Violations per Iteration')
+    lvsPerIterFig.savefig('LvsPerIterInStdRangePlot.png')
+    lvsPerIterFig.show()
+    time.sleep(10)
+
+
+    #reqs per balance plot
+    ReqsPerBalanceFig=pl.figure()
+    ReqsPerBalanceAxes=ReqsPerBalanceFig.add_subplot(1,1,1,projection='3d')
+    stds = pl.arange(Config.stdStart,Config.stdEnd+1,Config.stdStep)
+    balances = range(0,max(map(len,reqPerBalanceInStdRange)))
+    Y,X = pl.meshgrid(stds,balances)    
+    p=ReqsPerBalanceAxes.plot_surface(X,Y,Config.toNdArray(reqPerBalanceInStdRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
+    ReqsPerBalanceAxes.view_init(40, 40)
+    cb = ReqsPerBalanceFig.colorbar(p, shrink=0.5)
+    ReqsPerBalanceAxes.set_ylim3d([Config.stdStart,Config.stdEnd+1])
+    ReqsPerBalanceAxes.set_xlabel('Balances')
+    ReqsPerBalanceAxes.set_ylabel('Standard Deviation')
+    ReqsPerBalanceAxes.set_zlabel('Requests')
+    ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
+    ReqsPerBalanceFig.savefig('ReqsPerBalanceInStdRangePlot.png')
     ReqsPerBalanceFig.show()
     time.sleep(10)
