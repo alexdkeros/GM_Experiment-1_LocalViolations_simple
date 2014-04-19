@@ -1,24 +1,31 @@
 '''
 @author: ak
 '''
+from __future__ import division
 import math
 import numpy as np
 
-#exp NODE RANGE
+#- NODE RANGE
 nodeStart=2
-nodeEnd=20
+nodeEnd=50 #20
+
+#- THRESHOLD RANGE
+thresStart=10
+thresEnd=1000
 
 #- MEAN RANGE
-meanStart=0
-meanEnd=10
+meanStart=0 #0
+meanEnd=20 #20
 meanStep=0.5
-meanLvsPerIterPlotLim=100
-meanReqPerBalPlotLim=200
+meanLvsPerIterPlotLim=30
+meanReqPerBalPlotLim=100
 
 #- STD RANGE
 stdStart=0.5
-stdEnd=9
-stdStep=0.5
+stdEnd=9 #9
+stdStep=0.2
+stdLvsPerIterPlotLim=100
+stdReqPerBalPlotLim=200
 
 
 
@@ -26,10 +33,10 @@ stdStep=0.5
 
 #--------------default values---------------------
 #exp config
-defIterations=20
+defIterations=30
 
 #runtime limit(in sec)
-timeLimit=3
+timeLimit=5
 
 #default InputStream data
 defStatus='static'
@@ -46,8 +53,8 @@ defV=0
 defWeight=1
 
 #default geometric monitoring params
-threshold=100
-defMonFunc= lambda x: x
+threshold=1000
+defMonFunc= lambda x: x**2
 
 
 
