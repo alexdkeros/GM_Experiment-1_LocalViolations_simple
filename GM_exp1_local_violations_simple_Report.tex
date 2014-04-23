@@ -1,0 +1,380 @@
+%GM_exp1_local_violations_simple_Report.tex
+%Author: Alex D. Keros
+%A.M.2008030109
+
+\documentclass{article}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{caption}
+\linespread{1.6}
+
+
+\begin{document}
+
+
+	%Top Matter
+	\title{Geometric Monitoring:\\
+A Simple Local Violations Experiment}
+	\author{Alex D. Keros\\
+	A.M.2008030109}
+	\date{}
+	\maketitle	
+	\thispagestyle{empty}	
+	
+	\newpage	
+	\tableofcontents
+
+	\newpage
+	\section{Introduction}
+	
+		In recent years much attention has been shifted towards emerging applications requiring process of real time, continuous, high volume stream of data distributed over a range of sites. Such systems are known as \emph{distributed data stream systems} \cite{BabcockBabuDatarMotwaniWidom02}. One such application of much importance is monitoring threshold functions over the incoming data. A novel geometric approach by which an arbitrary global monitoring task can be split into a set of constraints applied locally on each of the streams has been proposed by Sharfman et al. in the publication \emph{``A Geometric Approach to Monitoring Threshold Functions Over Distributed Data Streams"}\cite{SharfmanSchusterKeren06}, covering a coordinator-based and a decentralized scenario.
+		
+		\subsection{Geometric Monitoring}\label{sub:GM} 
+
+		
+			The geometric monitoring method is based on the fact that the threshold violation of arbitrary functions (ex. non-linear functions over the streams) cannot be determined solely from the value of the monitored function from each individual stream, so a decomposition of the monitoring task into local constraints on streams is performed, taking advantage of Convex Analysis theorems and convexity applications.
+	
+			Both aforementioned scenarios consist of the following metrics:
+		\begin{itemize}
+			\item A \emph{local statistics vector} from node $p_i$, $\vec{v}_i(t)$, representing the incoming data stream.
+			\item A \emph{global statistics vector} $$\vec{v}(t)= \dfrac{\sum\limits_{i=1}^{n}{w_i \vec{v}_i(t)}}{\sum\limits_{i=1}^{n}{w_i}}$$, to be monitored, where $w_i$ the weight of node $p_i$, $n$ number of nodes.
+			\item Each node remembers its \emph{last collected statistics vector}, $\vec{v}_i\,'$.
+			\item An \emph{estimate vector}, $$\vec{e}(t)= \dfrac{\sum\limits_{i=1}^{n}{w_i \vec{v}_i\,'}}{\sum\limits_{i=1}^{n}{w_i}}$$, known at all nodes at any given time, where $w_i$ the weight of node $p_i$, $n$ number of nodes.
+			\begin{itemize}
+				\item In the \textbf{decentralized} setting each node keeps track of the last statistics vector broadcast by every node and locally calculates the \emph{estimate vector}.
+				\item In the \textbf{coordinator-based} setting a coordinator node $p_1$ collects local statistics vectors from nodes, computes the \emph{estimate vector} and distributes it to the nodes.
+			\end{itemize}
+			\item A \emph{drift vector} $\vec{u}_i(t)$ at each node $p_i$, where:
+			\begin{itemize}
+				\item In the \textbf{decentralized} setting is defined as: $$\vec{u}_i(t)=\vec{e}(t)+\Delta \vec{v}_i(t)$$
+				\item In the \textbf{coordinator-based} setting is defined as:
+$${\vec{u}_i(t)=\vec{e}(t)+\Delta\vec{v}_i(t)+\dfrac{\vec{\delta}_i}{w_i}}$$, where $\vec{\delta}_i$ the \emph{slack vector} at each node, used during the balancing process,
+			\end{itemize}
+			and $\Delta\vec{v}_i(t)=\vec{v}_i(t)-\vec{v}_i\,'$.
+		\end{itemize}
+		
+			Based on the above metrics, the local constraint applied on each of the nodes is reduced to observing the  monochromaticity of the ball $B\left(\,\vec{e}(t),\vec{u}_i(t)\,\right)$, making use of \textit{the convexity property of the drift vectors}, where: $$\dfrac{\sum\limits_{i=1}^{n}{w_i \vec{u}_i(t)}}{\sum\limits_{i=1}^{n}{w_i}}=\vec{v}(t)$$ In case of the monochromaticity property violation a \emph{local violation} has taken place, in which case the \textbf{coordinator-based} algorithm initiates a balancing process and the \textbf{distributed} algorithm causes the computation of a new \emph{estimate vector} via message exchange between all nodes.
+		
+			The \emph{balancing process} --- incorporated into the \textbf{coordinator-based} algorithm --- taking place after each local violation is the act of averaging out a  subset of the drift vectors $\vec{u}_i(t)$ via the slack vectors $\vec{\delta}_i$ mentioned earlier in order to resolve a violated constraint while preserving the convexity property of the drift vectors. This is made possible by the fact that $\sum\nolimits_{i} {\vec{\delta}_i=0}$. The operation of the coordinator during the balancing process is to establish a set of nodes, the \emph{balancing group} $P'$, by probing random nodes not contained in the group in order to create a \emph{balanced vector} $$\vec{b}=\dfrac{\sum\limits_{p_i\in P'}{w_i \vec{u}_i(t)}}{\sum\limits_{p_i\in P'}{w_i}}$$, such that a monochromatic ball $B\left(\,\vec{e}(t),\vec{b}\,\right)$ is created. If the process succeeds the coordinator sends each node contained in $P'$ an adjustment to its slack vector, such that $\vec{u}_i(t)=\vec{b}, \forall\, p_i\in P'$. If the process fails a \emph{global violation} has occurred, $P'$ contains all nodes, $B\left(\,\vec{e}(t),\vec{b}\,\right)$ is not monochromatic and the coordinator calculates a new $\vec{e}(t)$ and distributes it to the nodes.
+		\newpage
+		
+	\section{The Experiment}			
+		
+		One major downside of the aforementioned method (\ref{sub:GM}) is the extremely bad scalability of the number of nodes involved in the system performing the monitoring task\cite{GarofalakisKerenSamoladas13}, mainly due to heavy communication cost induced by false local violations and the balancing process. Aim of the current experiment is to make sense of the reasons behind this performance hit and propose methods to overcome it.
+	
+	\subsection{Implementation}
+	
+			The experiment implements the Geometric Monitoring algorithm over one-dimensional data, as described in \cite{SharfmanSchusterKeren06}, up until a global violation occurs. Specifically, to perform an experiment the following features are available\footnote{All of the following configurations can be made from the \texttt{GM\_LocalViolations/Config.py} file.}:
+			\begin{itemize}
+			 	\item The incoming data streams are one-dimensional and fully controllable concerning the velocity distributions, which are sampled from a user defined normal distribution (mean and standard deviation range, as well as the ability to select between a static velocity scenario throughout the experiment and a scenario in which the velocity value is resampled from the specified distribution at a ---also user defined--- interval).
+			 	\item The monitoring function and the desired threshold are user defined.
+			 	\item The node population range is user defined.  
+			\end{itemize}
+			
+			Measurements concern:
+			\begin{itemize}
+			\item Iterations\footnote{New data from the input streams are implemented in a sequential manner (i.e. a generator of input stream data is called explicitly) in order to observe and control the behaviour of the streams until a global violation occurs.Here, each probe cycle over all nodes is called an \emph{Iteration}.}:
+			\begin{itemize}
+				\item Total iterations in a specified node range.	
+				\item Total iterations in a specified threshold range.
+				\item Total iterations in a specified mean range.
+				\item Total iterations in a specified standard deviation range.
+			\end{itemize}
+			
+			\item Local Violations:
+			\begin{itemize}
+				\item Total local violations in a specified threshold range.
+				\item Total local violations in a specified node range.
+				\item Total local violations in a specified mean range.
+				\item Total local violations in a specified standard deviation range.
+				\item Local violation distribution over the performed iterations, in a specified node range.
+				\item Local violation distribution over the performed iterations, in a specified threshold range.
+				\item Local violation distribution over the performed iterations, in a specified mean range.
+				\item Local violation distribution over the performed iterations, in a specified standard deviation range.			
+			\end{itemize}
+			\item Request messages\footnote{\emph{Request messages} are part of the balancing process performed when a \emph{local violation} occurs.}:
+			\begin{itemize}
+				\item Total request messages in a specified node range.
+				\item Total request messages in a specified threshold range.
+				\item Total request messages in a specified mean range.
+				\item Total request messages in a specified standard deviation range.
+				\item Request message distribution over the performed balance processes, in a specified node range.
+				\item Request message distribution over the performed balance processes, in a specified threshold range.
+				\item Request message distribution over the performed balance processes, in a specified mean range.
+				\item Request message distribution over the performed balance processes, in a specified standard deviation range.
+			\end{itemize}				
+			\end{itemize}
+			
+	\subsection{Experimental Results}
+	
+		Experimental results are averaged over a total of 30 simulations. A timeout of 5 seconds is set in each simulation in case data streams do not converge to a global violation. The default node population is 10,default node weights of value 1 are used, and the initial data vectors for all nodes are set to 0, unless stated otherwise. Default threshold value is set to 1000 and data stream velocities are sampled from a $\mathcal{N} (5,1)$, unless stated otherwise. In case of random(i.e. resampled velocities) default interval value to resample is 1.
+		
+		\subsubsection{Iterations}
+			
+			Figure~\ref{fig:TotalIterNodeRange}: The number of iterations until a global violation occurs remains fairly stationary throughout the node range, presenting much dependence on the monitored function.\\
+			Figure~\ref{fig:TotalIterThresRange}: The number of iterations until a global violation occurs increases linearly throughout the threshold range in case of $f(x)=x$ as the monitored function. In the case of $f(x)=x^2$ as the monitored function, where the convergence towards a global violation point is expected to be faster, the number of iterations required increases in a much slower rate, showing plateaus at threshold range intervals of proximately 100.\\
+			Figure~\ref{fig:TotalIterMeanRange}: The number of iterations until a global violation occurs falls drastically throughout the mean range, as expected, due to faster data convergence towards the threshold point.\\
+			Figure~\ref{fig:TotalIterStdRange}: The number of iterations until a global violation occurs shows increasing peaks throughout the standard deviation range due to increasing variance in data velocities.
+			
+			Summarising, the number of iterations until a global violation occurs shows much dependence on the monitored function an d the monitoring threshold, as well as the mean of the velocity distributions.
+			
+		\subsubsection{Local Violations}
+			
+			Figure~\ref{fig:TotalLVsNodeRange}: The number of local violations until a global violation occurs increases linearly throughout the node range. The monitoring function causing a faster data convergence towards the threshold point ($f(x)=x^2$) requires less local violations, which seems counter-intuitive. The main reason behind this appears to be the faster convergence of data meaning that the balance process fails earlier and a global violation occurs, but this comes in contrast with the case where random velocities are used and even less local violations are required (whereas more successful balancing processes are expected).\\
+			Figure~\ref{fig:TotalLVsThresRange}: The number of local violations over a threshold range shows similar behaviour as the above figure, but with less impact.\\
+			Figure~\ref{fig:TotalLVsMeanRange}: The number of local violations until a global violation occurs falls drastically throughout the mean range, as expected, though showing the same odd behaviour between the static and the random velocity cases as the above figures.\\
+			Figure~\ref{fig:TotalLVsStdRange}: The number of local violations until a global violation occurs increases, showing increasing peaks over the standard deviation range, as expected, due to the increased variance of the data streams.\\
+			Figure~\ref{fig:LVsPerIterNodeRange}: The majority of local violations seems to be cumulated near the last iterations until the global violation, but the peak doesn't appear at the last iteration, as someone would expect, probably due to balancing processes ``smoothing" the drift vectors. In the case of random velocities local violations appear closer to the global violation, which comes in contrast with what someone would expect.\\
+			Figure~\ref{fig:LVsPerIterThresRange}: The number of local violations until a global violation occurs shows an expected behaviour of linear increase, as expected by observing the previous figures over a threshold range.\\
+			Figure~\ref{fig:LVsPerIterMeanRange}: A small mean value appears to scatter the local violations over the whole range of iterations, as opposed to a larger mean value which , due to increased data convergence, forces less iterations and cumulated local violations. Increasing the mean value seems to have more impact on the number of iterations required, compared to the number of local violations required.\\
+			Figure~\ref{fig:LVsPerIterStdRange}: Increasing the standard deviation seems to scatter the local violations over the range of iterations, as expected, due to icreased data variance.
+			
+			Summarizing, the number of local violations depends mostly on the number of nodes, the specified monitoring threshold and the mean value of the velocities distribution, showing a bizarre behaviour concerning the static and random velocities scenarios.
+		\subsubsection{Request Messages}
+		
+			All of the figures concerning the request messages \ref{RM} (Figure~\ref{fig:ReqsNodeRange}, Figure~\ref{fig:ReqsThresRange}, Figure~\ref{fig:ReqsMeanRange} ,Figure~\ref{fig:ReqsStdRange}, Figure~\ref{fig:ReqsPerBalNodeRange}, Figure~\ref{fig:ReqsPerBalThresRange}, Figure~\ref{fig:ReqsPerBalMeanRange}, Figure~\ref{fig:ReqsPerBalStdRange}): The number of request messages shows similar behaviour with the local violations throughout the specified ranges. Random velocities require less request messages because the balancing process succeeds with higher probability. This happens because of the variance induced by resampling velocities.
+		
+		
+		\newpage
+		\appendix
+		\section{Figures}
+		\subsection{Iterations}
+
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/IterationsInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/IterationsInNodeRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/IterationsInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/IterationsInNodeRangePlot.png}}
+			
+			\caption{Total iterations until global violation in node range.}
+			\label{fig:TotalIterNodeRange}
+			\end{figure}
+			
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/IterationsInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/IterationsInThresholdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/IterationsInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/IterationsInThresholdRangePlot.png}}
+			
+			\caption{Total iterations until global violation in threshold range.}
+			\label{fig:TotalIterThresRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/IterationsInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/IterationsInMeanRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/IterationsInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/IterationsInMeanRangePlot.png}}
+			
+			\caption{Total iterations until global violation in mean range.}
+			\label{fig:TotalIterMeanRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/IterationsInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/IterationsInStdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/IterationsInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/IterationsInStdRangePlot.png}}
+			
+			\caption{Total iterations until global violation in standard deviation range.}
+			\label{fig:TotalIterStdRange}
+			\end{figure}
+		
+		\subsection{Local Violations}
+		
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LocalViolationsInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LocalViolationsInNodeRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LocalViolationsInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LocalViolationsInNodeRangePlot.png}}
+			
+			\caption{Total local violations until global violation in node range.}
+			\label{fig:TotalLVsNodeRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LocalViolationsInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LocalViolationsInThresholdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LocalViolationsInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LocalViolationsInThresholdRangePlot.png}}
+			
+			\caption{Total local violations until global violation in threshold range.}
+			\label{fig:TotalLVsThresRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LocalViolationsInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LocalViolationsInMeanRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LocalViolationsInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LocalViolationsInMeanRangePlot.png}}
+			
+			\caption{Total local violations until global violation in mean range.}
+			\label{fig:TotalLVsMeanRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LocalViolationsInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LocalViolationsInStdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LocalViolationsInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LocalViolationsInStdRangePlot.png}}
+			
+			\caption{Total local violations until global violation in standard deviation range.}
+			\label{fig:TotalLVsStdRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LvsPerIterInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LvsPerIterInNodeRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LvsPerIterInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LvsPerIterInNodeRangePlot.png}}
+			
+			\caption{Local violations per iteration until global violation in node range.}
+			\label{fig:LVsPerIterNodeRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LvsPerIterInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LvsPerIterInThresholdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LvsPerIterInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LvsPerIterInThresholdRangePlot.png}}
+			
+			\caption{Local violations per iteration until global violation in threshold range.}
+			\label{fig:LVsPerIterThresRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LvsPerIterInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LvsPerIterInMeanRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LvsPerIterInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LvsPerIterInMeanRangePlot.png}}
+			
+			\caption{Local violations per iteration until global violation in mean range.}
+			\label{fig:LVsPerIterMeanRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/LvsPerIterInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/LvsPerIterInStdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/LvsPerIterInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/LvsPerIterInStdRangePlot.png}}
+			
+			\caption{Local violations per iteration until global violation in standard deviation range.}
+			\label{fig:LVsPerIterStdRange}
+			\end{figure}
+			
+		\subsection{Request Messages}\label{RM}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/RequestsInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/RequestsInNodeRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/RequestsInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/RequestsInNodeRangePlot.png}}
+			
+			\caption{Total request messages until global violation in node range.}
+			\label{fig:ReqsNodeRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/RequestsInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/RequestsInThresholdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/RequestsInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/RequestsInThresholdRangePlot.png}}
+			
+			\caption{Total request messages until global violation in threshold range.}
+			\label{fig:ReqsThresRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/RequestsInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/RequestsInMeanRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/RequestsInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/RequestsInMeanRangePlot.png}}
+			
+			\caption{Total request messages until global violation in mean range.}
+			\label{fig:ReqsMeanRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/RequestsInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/RequestsInStdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/RequestsInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/RequestsInStdRangePlot.png}}
+			
+			\caption{Total request messages until global violation in standard deviation range.}
+			\label{fig:ReqsStdRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/ReqsPerBalanceInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/ReqsPerBalanceInNodeRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/ReqsPerBalanceInNodeRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/ReqsPerBalanceInNodeRangePlot.png}}
+			
+			\caption{Request messages per balancing process until global violation in node range.}
+			\label{fig:ReqsPerBalNodeRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/ReqsPerBalanceInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/ReqsPerBalanceInThresholdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/ReqsPerBalanceInThresholdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/ReqsPerBalanceInThresholdRangePlot.png}}
+			
+			\caption{Request messages per balancing process until global violation in threshold range.}
+			\label{fig:ReqsPerBalThresRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/ReqsPerBalanceInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/ReqsPerBalanceInMeanRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/ReqsPerBalanceInMeanRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/ReqsPerBalanceInMeanRangePlot.png}}
+			
+			\caption{Request messages per balancing process until global violation in mean range.}
+			\label{fig:ReqsPerBalMeanRange}
+			\end{figure}
+			
+			\begin{figure}[H]
+			\hspace*{-3.2cm}	\subfloat[Static velociraptor, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{static_x/ReqsPerBalanceInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x$.]{\includegraphics[scale=0.45]{random_x/ReqsPerBalanceInStdRangePlot.png}}
+				\\ \hspace*{-3.2cm} \subfloat[Static velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{static_sqr_x/ReqsPerBalanceInStdRangePlot.png}}\hfill
+				\subfloat[Random velocities, monitored function $f(x)=x^2$.]{\includegraphics[scale=0.45]{random_sqr_x/ReqsPerBalanceInStdRangePlot.png}}
+			
+			\caption{Request messages per balancing process until global violation in standard deviation range.}
+			\label{fig:ReqsPerBalStdRange}
+			\end{figure}
+			
+	\subsection{Code}
+	
+		A Python implementation can be found at: \url{https://github.com/alexdkeros/GM_Experiment-1_LocalViolations_simple}.			
+			
+			
+			
+			
+	
+
+			
+					
+		
+		
+		
+	
+	
+	
+	\newpage
+	\addcontentsline{toc}{section}{References}
+	\begin{thebibliography}{9}
+		\bibitem{SharfmanSchusterKeren06}
+		I.Sharfman,A.Schuster, and D.Keren, A Geometric Approach to Monitoring Threshold Functions Over Distributed Data Streams, In \emph{SIGMOD}, 2006.
+		\bibitem{BabcockBabuDatarMotwaniWidom02}
+		B.Babcock, S.Babu, M.Datar, R.Motwani, and J.Widom, Models and issues in data stream systems. In \emph{PODS '02}, pages 1--16, New York , NY, USA, 2002, ACM Press.
+		\bibitem{GarofalakisKerenSamoladas13} M.Garofalakis, D.Keren, and V.Samoladas, Sketch-based Geometric Monitoring of Distributed Stream Queries, In \emph{Proc. VLDB Endow.}, 2013.
+	\end{thebibliography}
+
+\end{document}
