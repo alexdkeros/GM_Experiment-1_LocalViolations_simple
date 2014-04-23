@@ -18,7 +18,6 @@ from GM_localViolations import Config
 
 if __name__ == '__main__':
     
-   
     
     #-------------------------------------------------------------------------------------
     #---------------------------------EXPERIMENT:-----------------------------------------
@@ -119,7 +118,7 @@ if __name__ == '__main__':
     iterAxes.plot(nodeRange,itersInNodeRange,'r')
     iterAxes.grid(True)
     iterAxes.set_xlim([Config.nodeStart,Config.nodeEnd])
-    iterAxes.set_ylim([0,100])
+    #iterAxes.set_ylim([0,100])
     iterAxes.set_xlabel('Nodes')
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Node Range')
@@ -350,41 +349,13 @@ if __name__ == '__main__':
     #ReqsPerBalanceFig.show()
     #time.sleep(20)
     
-  
+
     
     
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        
     
     
     #-------------------------------------------------------------------------------------
@@ -481,9 +452,9 @@ if __name__ == '__main__':
     lvAxes.set_ylabel('Local Violations')
     lvAxes.set_title('Local Violations in Mean Range')
     lvFig.tight_layout()
-    #lvFig.savefig('LocalViolationsInMeanRangePlot.png')
-    lvFig.show()
-    time.sleep(10)
+    lvFig.savefig('LocalViolationsInMeanRangePlot.png')
+    #lvFig.show()
+    #time.sleep(10)
     
     #iterations plot
     iterFig,iterAxes=pl.subplots()
@@ -524,7 +495,7 @@ if __name__ == '__main__':
     lvsPerIterAxes.view_init(40, 40)
     cb = lvsPerIterFig.colorbar(p, shrink=0.5)
     lvsPerIterAxes.set_ylim3d([Config.meanStart,Config.meanEnd])
-    lvsPerIterAxes.set_xlim3d([0,Config.meanLvsPerIterPlotLim])
+    #lvsPerIterAxes.set_xlim3d([0,Config.meanLvsPerIterPlotLim])
     lvsPerIterAxes.set_xlabel('Iterations')
     lvsPerIterAxes.set_ylabel('Mean')
     lvsPerIterAxes.set_zlabel('Local Violations')
@@ -543,7 +514,7 @@ if __name__ == '__main__':
     p=ReqsPerBalanceAxes.plot_surface(X[0:Config.meanReqPerBalPlotLim,:],Y[0:Config.meanReqPerBalPlotLim,:],Config.toNdArray(reqPerBalanceInMeanRange)[:,0:Config.meanReqPerBalPlotLim].transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
     ReqsPerBalanceAxes.view_init(40, 40)
     cb = ReqsPerBalanceFig.colorbar(p, shrink=0.5)
-    ReqsPerBalanceAxes.set_xlim3d([0,Config.meanReqPerBalPlotLim])
+    #ReqsPerBalanceAxes.set_xlim3d([0,Config.meanReqPerBalPlotLim])
     ReqsPerBalanceAxes.set_ylim3d([Config.meanStart,Config.meanEnd])
     ReqsPerBalanceAxes.set_xlabel('Balances')
     ReqsPerBalanceAxes.set_ylabel('Mean')
@@ -697,7 +668,7 @@ if __name__ == '__main__':
     p=lvsPerIterAxes.plot_surface(X[0:Config.stdLvsPerIterPlotLim,:],Y[0:Config.stdLvsPerIterPlotLim,:],Config.toNdArray(lvsPerIterInStdRange)[:,0:Config.stdLvsPerIterPlotLim].transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
     lvsPerIterAxes.view_init(40, 40)
     cb = lvsPerIterFig.colorbar(p, shrink=0.5)
-    lvsPerIterAxes.set_xlim3d([0,Config.stdLvsPerIterPlotLim])
+    #lvsPerIterAxes.set_xlim3d([0,Config.stdLvsPerIterPlotLim])
     lvsPerIterAxes.set_ylim3d([Config.stdStart,Config.stdEnd+1])
     lvsPerIterAxes.set_xlabel('Iterations')
     lvsPerIterAxes.set_ylabel('Standard Deviation')
@@ -717,7 +688,7 @@ if __name__ == '__main__':
     p=ReqsPerBalanceAxes.plot_surface(X[0:Config.stdReqPerBalPlotLim,:],Y[0:Config.stdReqPerBalPlotLim,:],Config.toNdArray(reqPerBalanceInStdRange)[:,0:Config.stdReqPerBalPlotLim].transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
     ReqsPerBalanceAxes.view_init(40, 40)
     cb = ReqsPerBalanceFig.colorbar(p, shrink=0.5)
-    ReqsPerBalanceAxes.set_xlim3d([0,Config.stdReqPerBalPlotLim])
+    #ReqsPerBalanceAxes.set_xlim3d([0,Config.stdReqPerBalPlotLim])
     ReqsPerBalanceAxes.set_ylim3d([Config.stdStart,Config.stdEnd+1])
     ReqsPerBalanceAxes.set_xlabel('Balances')
     ReqsPerBalanceAxes.set_ylabel('Standard Deviation')
@@ -726,5 +697,3 @@ if __name__ == '__main__':
     ReqsPerBalanceFig.savefig('ReqsPerBalanceInStdRangePlot.png')
     #ReqsPerBalanceFig.show()
     #time.sleep(10)
-
-   

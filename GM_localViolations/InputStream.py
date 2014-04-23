@@ -56,12 +56,13 @@ class InputStream:
                 
 if __name__=="__main__":
     '''simple test'''
-    ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
-    ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
-    ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
+    ip=InputStream(status='random',initXData=-5,mean=10,interval=1).getData()
+    #ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
+    #ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
 
 
     print(ip)
-    #for i in range(20):
-    #    print(ip.next())
+    
+    for i in range(20):
+        print(ip.next())
     print(InputStream.velArray)   

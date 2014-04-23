@@ -11,21 +11,21 @@ nodeEnd=50 #20
 
 #- THRESHOLD RANGE
 thresStart=10
-thresEnd=1000
+thresEnd=300
 
 #- MEAN RANGE
 meanStart=0 #0
-meanEnd=20 #20
+meanEnd=30 #20
 meanStep=0.5
-meanLvsPerIterPlotLim=30
+meanLvsPerIterPlotLim=500
 meanReqPerBalPlotLim=100
 
 #- STD RANGE
 stdStart=0.5
-stdEnd=9 #9
+stdEnd=10 #9
 stdStep=0.2
-stdLvsPerIterPlotLim=100
-stdReqPerBalPlotLim=200
+stdLvsPerIterPlotLim=500
+stdReqPerBalPlotLim=100
 
 
 
@@ -54,7 +54,7 @@ defWeight=1
 
 #default geometric monitoring params
 threshold=1000
-defMonFunc= lambda x: x**2
+defMonFunc= lambda x: x
 
 
 

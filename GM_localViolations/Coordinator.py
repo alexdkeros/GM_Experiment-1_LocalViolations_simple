@@ -85,7 +85,7 @@ class Coordinator:
             lvPerIterCounter=0
             
             #DBG
-            print('--------------------iteration number:%d----------------------'%self.iterCounter)
+            #print('--------------------iteration number:%d----------------------'%self.iterCounter)
             
             #-----monitoring
             for node in self.nodes.values():

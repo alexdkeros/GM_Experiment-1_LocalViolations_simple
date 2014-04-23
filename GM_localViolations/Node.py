@@ -76,7 +76,7 @@ class Node:
         '''
     
         #DBG
-        print('reporting local violation at node %s, u:%0.2f'%(self.id,self.u))
+        #print('reporting local violation at node %s, u:%0.2f'%(self.id,self.u))
         
         return ((self.id,self.v,self.u))
 
