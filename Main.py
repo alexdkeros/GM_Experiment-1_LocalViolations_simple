@@ -3,7 +3,7 @@
 '''
 from __future__ import division
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import uuid
 import time
 import pylab as pl
@@ -57,8 +57,12 @@ if __name__ == '__main__':
             #create coordinator
             Coord=Coordinator(nodes,inputStreamControl=factory)
             
+            
             #---run experiment
             expData=Coord.monitor()
+            
+            #DBG
+            print(expData)
             
             #---collect data
             exp['total_lv']+=expData['total_lv']
@@ -118,9 +122,9 @@ if __name__ == '__main__':
     lvAxes.set_ylabel('Local Violations')
     lvAxes.set_title('Local Violations in Node Range')
     lvFig.tight_layout()
-    lvFig.savefig('LocalViolationsInNodeRangePlot.png')
-    #lvFig.show()
-    #time.sleep(5)
+    #lvFig.savefig('LocalViolationsInNodeRangePlot.png')
+    lvFig.show()
+    time.sleep(5)
     
     #iterations plot
     iterFig,iterAxes=pl.subplots()
@@ -132,9 +136,9 @@ if __name__ == '__main__':
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Node Range')
     iterFig.tight_layout()
-    iterFig.savefig('IterationsInNodeRangePlot.png')
-    #iterFig.show()
-    #time.sleep(5)
+    #iterFig.savefig('IterationsInNodeRangePlot.png')
+    iterFig.show()
+    time.sleep(5)
     
     #requests plot
     reqFig,reqAxes=pl.subplots()
@@ -145,9 +149,9 @@ if __name__ == '__main__':
     reqAxes.set_ylabel('Requests')
     reqAxes.set_title('Requests until Global Violation in Node Range')
     reqFig.tight_layout()
-    reqFig.savefig('RequestsInNodeRangePlot.png')
-    #reqFig.show()
-    #time.sleep(10)
+    #reqFig.savefig('RequestsInNodeRangePlot.png')
+    reqFig.show()
+    time.sleep(10)
     
     #3d plots
     #vls per iteration plot
@@ -157,16 +161,16 @@ if __name__ == '__main__':
     iters = range(0,max(map(len,lvsPerIterInNodeRange)))
     Y,X = pl.meshgrid(nodes,iters)
     p=lvsPerIterAxes.plot_surface(X,Y,Config.toNdArray(lvsPerIterInNodeRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
-    lvsPerIterAxes.view_init(70, 30)
+    lvsPerIterAxes.view_init(60, 35) #70,30
     cb = lvsPerIterFig.colorbar(p, shrink=0.5)
     lvsPerIterAxes.set_ylim3d(Config.nodeStart,Config.nodeEnd)
     lvsPerIterAxes.set_xlabel('Iterations')
     lvsPerIterAxes.set_ylabel('Nodes')
     lvsPerIterAxes.set_zlabel('Local Violations')
     lvsPerIterAxes.set_title('Average Local Violations per Iteration')
-    lvsPerIterFig.savefig('VlsPerIterInNodeRangePlot.png')
-    #lvsPerIterFig.show()
-    #time.sleep(20)
+    #lvsPerIterFig.savefig('VlsPerIterInNodeRangePlot.png')
+    lvsPerIterFig.show()
+    time.sleep(20)
     
     #reqs per balance plot
     ReqsPerBalanceFig=pl.figure()
@@ -175,16 +179,16 @@ if __name__ == '__main__':
     balances = range(0,max(map(len,reqPerBalanceInNodeRange)))
     Y,X = pl.meshgrid(nodes,balances)
     p=ReqsPerBalanceAxes.plot_surface(X,Y,Config.toNdArray(reqPerBalanceInNodeRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
-    ReqsPerBalanceAxes.view_init(70, 30)
+    ReqsPerBalanceAxes.view_init(60, 35)
     cb = ReqsPerBalanceFig.colorbar(p, shrink=0.5)
     ReqsPerBalanceAxes.set_ylim3d(Config.nodeStart,Config.nodeEnd)
     ReqsPerBalanceAxes.set_xlabel('Balances')
     ReqsPerBalanceAxes.set_ylabel('Nodes')
     ReqsPerBalanceAxes.set_zlabel('Requests')
     ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
-    ReqsPerBalanceFig.savefig('ReqsPerBalanceInNodeRangePlot.png')
-    #ReqsPerBalanceFig.show()
-    #time.sleep(20)
+    #ReqsPerBalanceFig.savefig('ReqsPerBalanceInNodeRangePlot.png')
+    ReqsPerBalanceFig.show()
+    time.sleep(20)
     
   
    
@@ -194,7 +198,7 @@ if __name__ == '__main__':
     
     
     
-    
+    '''
     
     
     
@@ -329,7 +333,7 @@ if __name__ == '__main__':
     iters = range(0,max(map(len,lvsPerIterInThresRange)))
     Y,X = pl.meshgrid(nodes,iters)
     p=lvsPerIterAxes.plot_surface(X,Y,Config.toNdArray(lvsPerIterInThresRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
-    lvsPerIterAxes.view_init(70, 30)
+    lvsPerIterAxes.view_init(60, 35)
     cb = lvsPerIterFig.colorbar(p, shrink=0.5)
     lvsPerIterAxes.set_ylim3d(Config.thresStart,Config.thresEnd)
     lvsPerIterAxes.set_xlabel('Iterations')
@@ -347,7 +351,7 @@ if __name__ == '__main__':
     balances = range(0,max(map(len,reqPerBalanceInThresRange)))
     Y,X = pl.meshgrid(thresholds,balances)
     p=ReqsPerBalanceAxes.plot_surface(X,Y,Config.toNdArray(reqPerBalanceInThresRange).transpose(),rstride=1, cstride=1, cmap=cm.get_cmap('coolwarm', None), linewidth=0, antialiased=True)
-    ReqsPerBalanceAxes.view_init(70, 30)
+    ReqsPerBalanceAxes.view_init(60, 35)
     cb = ReqsPerBalanceFig.colorbar(p, shrink=0.5)
     ReqsPerBalanceAxes.set_ylim3d(Config.thresStart,Config.thresEnd)
     ReqsPerBalanceAxes.set_xlabel('Balances')
@@ -706,3 +710,4 @@ if __name__ == '__main__':
     ReqsPerBalanceFig.savefig('ReqsPerBalanceInStdRangePlot.png')
     #ReqsPerBalanceFig.show()
     #time.sleep(10)
+'''

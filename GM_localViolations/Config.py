@@ -6,8 +6,8 @@ import math
 import numpy as np
 
 #- NODE RANGE
-nodeStart=2
-nodeEnd=50 #20
+nodeStart=10 #2
+nodeEnd=11 #50
 
 #- THRESHOLD RANGE
 thresStart=10
@@ -33,7 +33,7 @@ stdReqPerBalPlotLim=100
 
 #--------------default values---------------------
 #exp config
-defIterations=30
+defIterations=2 #30
 
 #runtime limit(in sec)
 timeLimit=5
@@ -53,7 +53,7 @@ defV=0
 defWeight=1
 
 #default geometric monitoring params
-threshold=1000
+threshold=10 #1000
 defMonFunc= lambda x: x
 
 

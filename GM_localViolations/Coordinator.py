@@ -80,6 +80,8 @@ class Coordinator:
         startT=time.time()
         elapsedT=0
         
+
+        
         gv=False
         while elapsedT<Config.timeLimit:
             #EXP-iter
@@ -87,9 +89,14 @@ class Coordinator:
             lvPerIterCounter=0
             
             #DBG
-            #print('--------------------iteration number:%d----------------------'%self.iterCounter)
+            print('--------------------iteration number:%d----------------------'%self.iterCounter)
+            
+
+            
             #correct velocities
             self.inputStreamControl.normalizeVelocities()
+            
+
             
             #-----monitoring
             for node in self.nodes.values():
@@ -103,8 +110,8 @@ class Coordinator:
                     lvPerIterCounter+=1
                     
                     #DBG
-                    #print("coord:!local violation!")
-                    #print(rep)
+                    print("coord:!local violation!")
+                    print(rep)
                     
                     gv=self.__balance(rep)
                     
@@ -152,8 +159,8 @@ class Coordinator:
        
         while 1:
             #DBG
-            #print('coord:balancing set is:')
-            #print(balancingSet)
+            print('coord:balancing set is:')
+            print(balancingSet)
 
             
             #computing balancing vector b
@@ -198,7 +205,7 @@ class Coordinator:
                     reqPerBalanceCounter+=1
                     
                     #DBG
-                    #print('coord:requesting node %s'%reqNodeId)
+                    print('coord:requesting node %s'%reqNodeId)
                     
                     balancingSet.add(self.nodes[reqNodeId][1].req())
                    
