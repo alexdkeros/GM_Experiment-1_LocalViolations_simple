@@ -14,11 +14,12 @@ class Coordinator:
     '''
 
 
-    def __init__(self, nodes, balancing="random",monFunc=Config.defMonFunc, threshold=Config.threshold):
+    def __init__(self, nodes,inputStreamControl=None, balancing="random",monFunc=Config.defMonFunc, threshold=Config.threshold):
         '''
         Constructor
         args:
             nodes: network node dictionary
+            inputStreamControl: controls the input streams
             balancing: the balancing method
             monFunc: the monitoring function
             threshold: monitoring threshold
@@ -27,6 +28,7 @@ class Coordinator:
         
         #coordinator data initialization
         self.nodes=nodes   #network node dictionary {"nodeId" : (weight ,node instance)}
+        self.inputStreamControl=inputStreamControl #controls input streams
         self.thresh=threshold    #monitoring threshold
         self.monFunc=monFunc
         self.v=0    #global statistics vector
@@ -86,6 +88,8 @@ class Coordinator:
             
             #DBG
             #print('--------------------iteration number:%d----------------------'%self.iterCounter)
+            #correct velocities
+            self.inputStreamControl.normalizeVelocities()
             
             #-----monitoring
             for node in self.nodes.values():

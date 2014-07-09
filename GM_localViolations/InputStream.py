@@ -6,6 +6,7 @@ from GM_localViolations import Config
 
 
 
+
 class InputStream:
     '''
     class InputStream
@@ -13,9 +14,8 @@ class InputStream:
     implements a generator of data
     configuration via Config module
     '''
-    velArray=[]
 
-    def __init__(self,status=Config.defStatus,initXData=Config.defInitXData, mean=Config.defMean, std=Config.defStd, interval=Config.defInterval):
+    def __init__(self,status,initXData, mean, std, interval):
         '''
         Constructor
         args:
@@ -24,17 +24,18 @@ class InputStream:
               std: standard deviation of normal distribution
               interval: update interval in case of changing velocities
         '''
-        if status in ["static", "random"]:
-            self.status=status
-        else:
-            print("Bad input: status must be 'static' or 'random'. 'Static' status is assumed")
-            self.status='static'
+        self.status=status
         self.initXData=initXData
         self.mean=mean
         self.std=std
         self.interval=interval
-        self.velocity=norm.rvs(mean,std)     
-        InputStream.velArray.append(self.velocity)
+        self.velocity=norm.rvs(self.mean,self.std)  
+    
+    def getVelocity(self):
+        return self.velocity
+    
+    def correctVelocity(self,deltaV):  
+        self.velocity+=deltaV
     
     def getData(self):
         '''
@@ -45,7 +46,6 @@ class InputStream:
         while 1:
             if self.status=="random":
                 self.velocity=norm.rvs(self.mean,self.std)
-
             for i in range(self.interval):
                 yield xData
             xData=xData+self.velocity
@@ -56,13 +56,32 @@ class InputStream:
                 
 if __name__=="__main__":
     '''simple test'''
-    ip=InputStream(status='random',initXData=-5,mean=10,interval=1).getData()
-    #ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
-    #ip=InputStream(status='static',initXData=-5,mean=10,interval=1).getData()
 
-
-    print(ip)
+    streams=[]
+    for i in range(10):
+        stream=InputStream("random",0,5,1,1)
+        streams.append((stream,stream.getData()))
+    print(streams)
     
-    for i in range(20):
-        print(ip.next())
-    print(InputStream.velArray)   
+    avgV=0
+    for stream in streams:
+        avgV+=stream[0].getVelocity()
+    print("avgVel:%f"%(avgV/10))
+    
+    for stream in streams:
+        stream[0].correctVelocity(5-avgV/10)
+    
+    avgV=0
+    for stream in streams:
+        avgV+=stream[0].getVelocity()
+    print("avgVel:%f"%(avgV/10))
+    
+    for i in range(10):
+        avgV=0
+        print("-------iter:%d--------"%i)
+        for stream in streams:
+            avgV+=stream[0].getVelocity()
+            print("vel:%f, data:%f"%(stream[0].getVelocity(),stream[1].next()))
+        print("avgVel:%f"%(avgV/10))
+
+    

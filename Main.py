@@ -13,6 +13,7 @@ from mpl_toolkits.mplot3d.axes3d import Axes3D
 from GM_localViolations.Coordinator import Coordinator
 from GM_localViolations.Node import Node
 from GM_localViolations.InputStream import InputStream
+from GM_localViolations.InputStreamFactory import InputStreamFactory
 from GM_localViolations import Config
 
 
@@ -41,17 +42,25 @@ if __name__ == '__main__':
         #iterations to avg over
         for iterations in range(Config.defIterations):
             
-            #init experiment
+            #---init experiment
+            
+            #create input streams
+            factory=InputStreamFactory(nodeNum)
+            streamFetcher=factory.getInputStream()
+            
+            #create nodes
             nodes={}
             for i in range(nodeNum):
                 nodeId=uuid.uuid4()
-                nodes[nodeId]=(Config.defWeight,Node(nodeId))
-            Coord=Coordinator(nodes)
+                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=streamFetcher.next()))
             
-            #run experiment
+            #create coordinator
+            Coord=Coordinator(nodes,inputStreamControl=factory)
+            
+            #---run experiment
             expData=Coord.monitor()
             
-            #collect data
+            #---collect data
             exp['total_lv']+=expData['total_lv']
             exp['total_iterations']+=expData['total_iterations']
             exp['total_request_msgs']+=expData['total_request_msgs']
