@@ -95,6 +95,8 @@ if __name__ == '__main__':
     print(itersInNodeRange)
     print('MAIN:reqs:')
     print(reqsInNodeRange)
+    print('MAIN:avgReqsPerLv')
+    print(pl.divide(reqsInNodeRange,lvsInNodeRange))
     print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInNodeRange)))
     print(lvsPerIterInNodeRange)
     print('MAIN:ReqPerBalance:%d'%max(map(len,reqPerBalanceInNodeRange)))
@@ -112,6 +114,19 @@ if __name__ == '__main__':
     
     #2Dplots
     nodeRange = pl.arange( Config.nodeStart, Config.nodeEnd+1)
+    
+    #requests/vls plot
+    rlvFig,rlvAxes=pl.subplots()
+    rlvAxes.plot(nodeRange,pl.divide(reqsInNodeRange,lvsInNodeRange),'r')
+    rlvAxes.grid(True)
+    rlvAxes.set_xlim([Config.nodeStart,Config.nodeEnd])
+    rlvAxes.set_xlabel('Nodes')
+    rlvAxes.set_ylabel('Avg Requests per Local Violation')
+    rlvAxes.set_title('Avg Requests per Local Violation in Node Range')
+    rlvFig.tight_layout()
+    rlvFig.savefig('AvgRequestsPerLocalViolationInNodeRangePlot.png')
+    #rlvFig.show()
+    #time.sleep(5)
 
     #local violation plot
     lvFig,lvAxes=pl.subplots()
@@ -122,9 +137,9 @@ if __name__ == '__main__':
     lvAxes.set_ylabel('Local Violations')
     lvAxes.set_title('Local Violations in Node Range')
     lvFig.tight_layout()
-    #lvFig.savefig('LocalViolationsInNodeRangePlot.png')
-    lvFig.show()
-    time.sleep(5)
+    lvFig.savefig('LocalViolationsInNodeRangePlot.png')
+    #lvFig.show()
+    #time.sleep(5)
     
     #iterations plot
     iterFig,iterAxes=pl.subplots()
@@ -136,9 +151,9 @@ if __name__ == '__main__':
     iterAxes.set_ylabel('Iterations')
     iterAxes.set_title('Iterations until Global Violation in Node Range')
     iterFig.tight_layout()
-    #iterFig.savefig('IterationsInNodeRangePlot.png')
-    iterFig.show()
-    time.sleep(5)
+    iterFig.savefig('IterationsInNodeRangePlot.png')
+    #iterFig.show()
+    #time.sleep(5)
     
     #requests plot
     reqFig,reqAxes=pl.subplots()
@@ -149,9 +164,9 @@ if __name__ == '__main__':
     reqAxes.set_ylabel('Requests')
     reqAxes.set_title('Requests until Global Violation in Node Range')
     reqFig.tight_layout()
-    #reqFig.savefig('RequestsInNodeRangePlot.png')
-    reqFig.show()
-    time.sleep(10)
+    reqFig.savefig('RequestsInNodeRangePlot.png')
+    #reqFig.show()
+    #time.sleep(10)
     
     #3d plots
     #vls per iteration plot
@@ -168,9 +183,9 @@ if __name__ == '__main__':
     lvsPerIterAxes.set_ylabel('Nodes')
     lvsPerIterAxes.set_zlabel('Local Violations')
     lvsPerIterAxes.set_title('Average Local Violations per Iteration')
-    #lvsPerIterFig.savefig('VlsPerIterInNodeRangePlot.png')
-    lvsPerIterFig.show()
-    time.sleep(20)
+    lvsPerIterFig.savefig('VlsPerIterInNodeRangePlot.png')
+    #lvsPerIterFig.show()
+    #time.sleep(20)
     
     #reqs per balance plot
     ReqsPerBalanceFig=pl.figure()
@@ -186,9 +201,9 @@ if __name__ == '__main__':
     ReqsPerBalanceAxes.set_ylabel('Nodes')
     ReqsPerBalanceAxes.set_zlabel('Requests')
     ReqsPerBalanceAxes.set_title('Average Requests per Balancing Process')
-    #ReqsPerBalanceFig.savefig('ReqsPerBalanceInNodeRangePlot.png')
-    ReqsPerBalanceFig.show()
-    time.sleep(20)
+    ReqsPerBalanceFig.savefig('ReqsPerBalanceInNodeRangePlot.png')
+    #ReqsPerBalanceFig.show()
+    #time.sleep(20)
     
   
    
@@ -198,7 +213,7 @@ if __name__ == '__main__':
     
     
     
-    '''
+    
     
     
     
@@ -227,11 +242,16 @@ if __name__ == '__main__':
         for iterations in range(Config.defIterations):
             
             #init experiment
+            
+            #create input streams
+            factory=InputStreamFactory(Config.defNodeNum)
+            streamFetcher=factory.getInputStream()
+            
             nodes={}
-            for i in range(thresh):
+            for i in range(Config.defNodeNum):
                 nodeId=uuid.uuid4()
-                nodes[nodeId]=(Config.defWeight,Node(nodeId,threshold=thresh))
-            Coord=Coordinator(nodes,threshold=thresh)
+                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=streamFetcher.next(),threshold=thresh))
+            Coord=Coordinator(nodes,inputStreamControl=factory, threshold=thresh)
             
             #run experiment
             expData=Coord.monitor()
@@ -267,6 +287,8 @@ if __name__ == '__main__':
     print(itersInThresRange)
     print('MAIN:reqs:')
     print(reqsInThresRange)
+    print('MAIN:avgReqsPerLv')
+    print(pl.divide(reqsInThresRange,lvsInThresRange))
     print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInThresRange)))
     print(lvsPerIterInThresRange)
     print('MAIN:ReqPerBalance:%d'%max(map(len,reqPerBalanceInThresRange)))
@@ -284,6 +306,19 @@ if __name__ == '__main__':
     
     #2Dplots
     thresRange = pl.arange( Config.thresStart, Config.thresEnd+1)
+    
+    #requests/vls plot
+    rlvFig,rlvAxes=pl.subplots()
+    rlvAxes.plot(thresRange,pl.divide(reqsInThresRange,lvsInThresRange),'r')
+    rlvAxes.grid(True)
+    rlvAxes.set_xlim([Config.thresStart,Config.thresEnd])
+    rlvAxes.set_xlabel('Threshold')
+    rlvAxes.set_ylabel('Avg Requests per Local Violation')
+    rlvAxes.set_title('Avg Requests per Local Violation in Threshold Range')
+    rlvFig.tight_layout()
+    rlvFig.savefig('AvgRequestsPerLocalViolationInThresRangePlot.png')
+    #rlvFig.show()
+    #time.sleep(5)
 
     #local violation plot
     lvFig,lvAxes=pl.subplots()
@@ -368,7 +403,27 @@ if __name__ == '__main__':
     
     
     
-        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
     
     
     #-------------------------------------------------------------------------------------
@@ -397,12 +452,17 @@ if __name__ == '__main__':
         for iterations in range(Config.defIterations):
             
             #init experiment
+            
+            #create input streams
+            factory=InputStreamFactory(Config.defNodeNum, mean=meanVal)
+            streamFetcher=factory.getInputStream()
+            
+            
             nodes={}
             for i in range(Config.defNodeNum):
                 nodeId=uuid.uuid4()
-                nodeInputGen=InputStream(mean=meanVal)
-                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=nodeInputGen))
-            Coord=Coordinator(nodes)
+                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=streamFetcher.next()))
+            Coord=Coordinator(nodes,inputStreamControl=factory)
             
             #run experiment
             expData=Coord.monitor()
@@ -438,6 +498,8 @@ if __name__ == '__main__':
     print(itersInMeanRange)
     print('MAIN:reqs:')
     print(reqsInMeanRange)
+    print('MAIN:avgReqsPerLv')
+    print(pl.divide(reqsInMeanRange,lvsInMeanRange))
     print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInMeanRange)))
     print(lvsPerIterInMeanRange)
     print('MAIN:ReqPerBalance:%d'%max(map(len,reqPerBalanceInMeanRange)))
@@ -455,6 +517,19 @@ if __name__ == '__main__':
     
     #2Dplots
     meanRange = pl.arange( Config.meanStart, Config.meanEnd+1,Config.meanStep)
+    
+    #requests/vls plot
+    rlvFig,rlvAxes=pl.subplots()
+    rlvAxes.plot(meanRange,pl.divide(reqsInMeanRange,lvsInMeanRange),'r')
+    rlvAxes.grid(True)
+    rlvAxes.set_xlim([Config.meanStart,Config.meanEnd])
+    rlvAxes.set_xlabel('Mean')
+    rlvAxes.set_ylabel('Avg Requests per Local Violation')
+    rlvAxes.set_title('Avg Requests per Local Violation in Mean Range')
+    rlvFig.tight_layout()
+    rlvFig.savefig('AvgRequestsPerLocalViolationInMeanRangePlot.png')
+    #rlvFig.show()
+    #time.sleep(5)
 
     #local violation plot
     lvFig,lvAxes=pl.subplots()
@@ -541,6 +616,22 @@ if __name__ == '__main__':
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
         
     #-------------------------------------------------------------------------------------
     #---------------------------------EXPERIMENT:-----------------------------------------
@@ -568,12 +659,17 @@ if __name__ == '__main__':
         for iterations in range(Config.defIterations):
             
             #init experiment
+            
+            #create input streams
+            factory=InputStreamFactory(Config.defNodeNum, std=stdVal)
+            streamFetcher=factory.getInputStream()
+            
+            
             nodes={}
             for i in range(Config.defNodeNum):
                 nodeId=uuid.uuid4()
-                nodeInputGen=InputStream(std=stdVal)
-                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=nodeInputGen))
-            Coord=Coordinator(nodes)
+                nodes[nodeId]=(Config.defWeight,Node(nodeId,inputGen=streamFetcher.next()))
+            Coord=Coordinator(nodes,inputStreamControl=factory)
             
             #run experiment
             expData=Coord.monitor()
@@ -609,6 +705,8 @@ if __name__ == '__main__':
     print(itersInStdRange)
     print('MAIN:reqs:')
     print(reqsInStdRange)
+    print('MAIN:avgReqsPerLv')
+    print(pl.divide(reqsInStdRange,lvsInStdRange))
     print('MAIN:lvsPerIter:%d'%max(map(len,lvsPerIterInStdRange)))
     print(lvsPerIterInStdRange)
     print('MAIN:ReqPerBalance:%d'%max(map(len,reqPerBalanceInStdRange)))
@@ -627,6 +725,19 @@ if __name__ == '__main__':
 
     #2Dplots
     stdRange = pl.arange( Config.stdStart, Config.stdEnd+1,Config.stdStep)
+    
+    #requests/vls plot
+    rlvFig,rlvAxes=pl.subplots()
+    rlvAxes.plot(stdRange,pl.divide(reqsInStdRange,lvsInStdRange),'r')
+    rlvAxes.grid(True)
+    rlvAxes.set_xlim([Config.stdStart,Config.stdEnd])
+    rlvAxes.set_xlabel('Standard Deviation')
+    rlvAxes.set_ylabel('Avg Requests per Local Violation')
+    rlvAxes.set_title('Avg Requests per Local Violation in Standard Deviation Range')
+    rlvFig.tight_layout()
+    rlvFig.savefig('AvgRequestsPerLocalViolationInStdRangePlot.png')
+    #rlvFig.show()
+    #time.sleep(5)
 
     #local violation plot
     lvFig,lvAxes=pl.subplots()
@@ -710,4 +821,3 @@ if __name__ == '__main__':
     ReqsPerBalanceFig.savefig('ReqsPerBalanceInStdRangePlot.png')
     #ReqsPerBalanceFig.show()
     #time.sleep(10)
-'''
